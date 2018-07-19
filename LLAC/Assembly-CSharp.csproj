@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\PlayerCamera.cs" />
+    <Compile Include="Assets\Scripts\PlayerMomentum.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\RotateModel.cs" />
     <Reference Include="UnityEditor.StandardEvents">

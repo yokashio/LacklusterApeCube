@@ -9,17 +9,21 @@ public class PlayerMovement : MonoBehaviour {
     private float baseSpeed = 5.0f;
     private float rotSpeedX = 4.0f;
     private float rotSpeedY = 4.0f;
-    private float gravity = 2.0f;
+    private float gravity = 7.0f;
     private float cameraDist = 8.0f;
-    private float cameraOffset = 3.0f;
+    private float cameraOffset = 4.0f;
     Vector3 moveVector;
+    Vector3 lookVector;
+    Vector3 vertVector;
+    private float fallVelocity = 0;
 
     [SerializeField] private bool isBall;
 
     // Use this for initialization
     void Start () {
         controller = GetComponent<CharacterController>();
-        //moveVector = baseSpeed * transform.forward;
+        moveVector = baseSpeed * transform.forward;
+        lookVector = moveVector;
     }
     // Update is called once per frame
     void FixedUpdate() {
@@ -27,14 +31,16 @@ public class PlayerMovement : MonoBehaviour {
         float moveYaw = Input.GetAxis("Horizontal");
         float movePitch = Input.GetAxis("Vertical");
 
+        if (Input.GetKey(KeyCode.Space))
+        {
+            moveVector += baseSpeed * transform.forward;
+        }
         if (isBall)
         {
             gravity = 10.0f;
         }
         else
         {
-            gravity = 2.0f;
-
             //Vector3 moveVector = baseSpeed * transform.forward;
             Vector3 inputs = new Vector3(moveYaw, 0.0f, movePitch);
 
@@ -42,40 +48,40 @@ public class PlayerMovement : MonoBehaviour {
             Vector3 pitch = inputs.z * -transform.up * rotSpeedY * Time.deltaTime;
             Vector3 dir = yaw + pitch;
 
-            float maxX = Quaternion.LookRotation(moveVector + dir).eulerAngles.x;
+            float maxX = Quaternion.LookRotation(lookVector + dir).eulerAngles.x;
+
 
 
             if (maxX < 90 && maxX > 70 || maxX > 270 && maxX < 290)
             {
-                moveVector += Vector3.down * gravity * Time.deltaTime;
+                
             }
             else
             {
-                //Vector3 vertVel = 
                 moveVector += dir;
-                moveVector -= Vector3.Magnitude(moveVector) * transform.forward;
-
-
-                transform.rotation = Quaternion.LookRotation(moveVector);
-
+                lookVector += dir;
+                transform.rotation = Quaternion.LookRotation(lookVector);
             }
-            
+
+            //grav
+            moveVector += Vector3.down * gravity * Time.deltaTime;
+
+            //flymove
+            vertVector = (moveVector - Vector3.ProjectOnPlane(Vector3.up, moveVector));
+            fallVelocity = vertVector.magnitude;
+            moveVector -= vertVector * Time.deltaTime * 1.02f;
+            moveVector += vertVector.magnitude * transform.forward * Time.deltaTime;
+            Debug.Log("vert: " + vertVector);
 
             //camera
             Vector3 moveCam = transform.position - (transform.forward * cameraDist) + (transform.up * cameraOffset);
             Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, moveCam, 0.04f);
-            Camera.main.transform.LookAt(transform.position + (moveVector * 10));
-            Debug.Log(Vector3.Magnitude(moveVector));
+            Camera.main.transform.LookAt(transform.position + (moveVector + lookVector));
+            Debug.Log("move: " + moveVector);
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                controller.Move(moveVector * 5 * Time.deltaTime);
-            }
-            else
-            {
-                controller.Move(moveVector * Time.deltaTime);
-            }
-            
+
+
+            controller.Move(moveVector * Time.deltaTime);
 
 
 
