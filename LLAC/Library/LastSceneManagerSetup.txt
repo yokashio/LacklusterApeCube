@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scene/Liang.unity
+- path: Assets/Scene/Elliottttttt.unity
   isLoaded: 1
   isActive: 1
