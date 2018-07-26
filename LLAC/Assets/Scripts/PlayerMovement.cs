@@ -73,19 +73,16 @@ public class PlayerMovement : MonoBehaviour {
             moveVector += vertVector.magnitude * transform.forward * Time.deltaTime;
             Debug.Log("vert: " + vertVector);
 
-            //camera
-            Vector3 moveCam = transform.position - (transform.forward * cameraDist) + (transform.up * cameraOffset);
-            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, moveCam, 0.04f);
-            Camera.main.transform.LookAt(transform.position + (moveVector + lookVector));
             Debug.Log("move: " + moveVector);
-
-
 
             controller.Move(moveVector * Time.deltaTime);
 
-
-
         }
-        
+
+        //camera
+        Vector3 moveCam = transform.position - (transform.forward * cameraDist) + (transform.up * cameraOffset);
+        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, moveCam, 0.04f);
+        Camera.main.transform.LookAt(transform.position + (moveVector + lookVector));
+
     }
 }
